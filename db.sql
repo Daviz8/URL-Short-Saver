@@ -1,0 +1,6 @@
+CREATE TABLE short (
+  id SERIAL PRIMARY KEY,
+  url TEXT NOT NULL,
+  description TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
