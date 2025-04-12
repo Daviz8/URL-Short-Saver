@@ -1,4 +1,5 @@
 import { useState } from "react";
+import UrlTable from "./urlTable";
 
 function Short() {
   const [input, setInput] = useState("");
@@ -48,7 +49,8 @@ function Short() {
     <div className="h-full bg-white flex flex-col items-center justify-center py-12">
       <div className="sm:w-full sm:max-w-sm">
         <img className="mx-auto h-20 w-auto" src="images/http.png" alt="Logo" />
-        <h2 className="text-center text-2xl font-bold text-gray-900">URL Shortener</h2>
+
+        <h2 className="text-center text-2xl font-bold text-gray-900">URL Shortener/Saver</h2>
 
         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
           <input
@@ -80,6 +82,11 @@ function Short() {
         </form>
     
       </div>
+
+<br /><br /><br />
+
+
+<UrlTable/>
     </div>
   );
 }

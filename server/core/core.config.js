@@ -1,4 +1,4 @@
-import express from "express";
+import express, { request } from "express";
 import bodyParser from "body-parser";
 import { promises as fs } from 'fs';
 import path from 'path';
@@ -18,19 +18,6 @@ export const runAppConfig = () => {
     // Database connection
     db.connect();
 
-    /* CORS setup
-    const corsOptions = {
-        origin: (origin, callback) => {
-            if (!origin || whitelist.includes(origin)) {
-                callback(null, true);
-            } else {
-                callback(new Error("Not allowed by CORS"));
-            }
-        },
-        methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-        credentials: true,
-    };*/
-
 app.use(cors());
   
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -38,51 +25,55 @@ app.use(bodyParser.json());
 app.use(express.json());
 
 
-//URL shortener API 
 app.post("/links", async (req, res) => {
-
   try {
-    const  description = req.body.description
-    const  url  = req.body.url;
-    console.log("Received URL:", url);
-    console.log("Received description:", description);
+      const description = req.body.description;
+      const url = req.body.url;
 
-    // Validate URL format (basic validation)
-    const urlPattern = /^(ftp|http|https):\/\/[^ "]+$/;
-    if (!urlPattern.test(url)) {
-      return res.status(400).json({ error: "Invalid URL format" });
-    }
+      console.log("Received URL:", url);
+      console.log("Received description:", description);
 
-    // 
-const data = {
-    url:url,
-};
+      // Validate URL format (basic validation)
+      const urlPattern = /^(ftp|http|https):\/\/[^ "]+$/;
+      if (!urlPattern.test(url)) {
+          return res.status(400).json({ error: "Invalid URL format" });
+      }
 
+      const data = {
+          url: url,
+      };
 
+      let shortenedUrl;
 
-axios.post('https://spoo.me/', data, {
-    headers: {
-        'content-type': 'application/x-www-form-urlencoded',
-        Accept: 'application/json',
-    },
-})
+      await axios.post('https://spoo.me/', data, {
+          headers: {
+              'content-type': 'application/x-www-form-urlencoded',
+              Accept: 'application/json',
+          },
+      })
+      .then(function (response) {
+          shortenedUrl = response.data.short_url;
+          console.log("Shortened URL:", shortenedUrl);
+      })
+      .catch(function (error) {
+          console.error("Error calling spoo.me:", error);
+          return res.status(500).json({ error: "Failed to shorten URL" });
+      });
 
-.then(function (response) {
-  console.log("Spoo.me Response:", response.data);
-})
-.catch(function (error) {
-  console.error("Error calling spoo.me:", error);
-  return res.status(500).json({ error: "Failed to shorten URL" });
-});
+      // Check if we successfully got a shortened URL
+      if (!shortenedUrl) {
+          return res.status(500).json({ error: "Failed to retrieve shortened URL" });
+      }
 
-    const result = await db.query(
-      "INSERT INTO links (description, url) VALUES ($1,$2) RETURNING *",[description, url]
-    );
+      const result = await db.query(
+          "INSERT INTO links (description, url,  ShortenedUrl) VALUES ($1, $2, $3) RETURNING *",
+          [description, url, shortenedUrl]
+      );
 
-    res.json({ data: result.rows[0] });
+      res.json({ data: result.rows[0] });
   } catch (error) {
-    console.error("Server error:", error);
-    res.status(500).json({ error: "Failed to process URL" });
+      console.error("Server error:", error);
+      res.status(500).json({ error: "Failed to process URL" });
   }
 });
 
@@ -91,7 +82,6 @@ axios.post('https://spoo.me/', data, {
   app.get("/links", async (req, res) => {
     try {
       const allLinks = await db.query("SELECT * FROM links");
-      console.log("hello"); 
       res.json(allLinks.rows);
     } catch (error) {
       console.error(error.message);

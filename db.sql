@@ -1,6 +1,7 @@
-CREATE TABLE short (
+CREATE TABLE links  (
   id SERIAL PRIMARY KEY,
   url TEXT NOT NULL,
+  ShortenedUrl TEXT NOT NULL,
   description TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
