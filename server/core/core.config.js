@@ -1,6 +1,6 @@
 import express, { request } from "express";
 import bodyParser from "body-parser";
-import { promises as fs } from 'fs';
+import { promises as fs, link } from 'fs';
 import path from 'path';
 import cors from "cors";
 import db from "./core.db.js"; // 
@@ -77,23 +77,36 @@ app.post("/links", async (req, res) => {
   }
 });
 
+app.get("/links", async (req, res) => {
+  try {
+    const page = parseInt(req.query.page || '0');
+    const linksPerPage = 10;
+    const offset = page * linksPerPage;
 
-  // Get all links
-  app.get("/links", async (req, res) => {
-    try {
-      const allLinks = await db.query("SELECT * FROM links");
-      res.json(allLinks.rows);
-    } catch (error) {
-      console.error(error.message);
-      res.status(500).json({ error: "Server error" });
-    }
-  });
+    const countResult = await db.query("SELECT COUNT(*) FROM links");
+    const totalLinks = parseInt(countResult.rows[0].count);
+    const totalPages = Math.ceil(totalLinks / linksPerPage);
+
+    const allLinks = await db.query("SELECT * FROM links LIMIT $1 OFFSET $2", [linksPerPage, offset]);
+
+    res.json({
+      page: page,
+      totalPages: totalPages,
+      links: allLinks.rows,
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+  
   
 
   app.get("/links/:id", async (req, res) => {
+    
     try {
       const id = req.params.id;
-      const linkResult = await db.query("SELECT * FROM links WHERE id = $1", [id]);
+      const linkResult = await db.query("SELECT * FROM links WHERE id = $1" , [id]  );
       if (linkResult.rows.length === 0) {
         return res.status(404).json({ message: "Link not found" });
       }
@@ -108,10 +121,10 @@ app.post("/links", async (req, res) => {
   app.put("/links/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const { description, url } = req.body;
+      const { description} = req.body;
       const updateResult = await db.query(
-        "UPDATE links SET description = $1, url = $2 WHERE id = $3 RETURNING *",
-        [description, url, id]
+        "UPDATE links SET description = $1, RETURNING *",
+        [description]
       );
       if (updateResult.rows.length === 0) {
         return res.status(404).json({ message: "Link not found" });

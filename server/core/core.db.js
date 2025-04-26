@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const pass =  process.env.PASSWORD; 
+const PORT = process.env.PORT
 
 import pg from "pg";
 
