@@ -5,43 +5,47 @@ function Short() {
   const [input, setInput] = useState("");
   const [disable, setDisable] = useState(true);
   const [description, setDescription] = useState("");
+  const [urlError, setUrlError] = useState("");
 
   const handleDescriptionChange = (event) => {
-    const description = event.target.value;
-    setDescription(description);
+    setDescription(event.target.value);
   };
 
- //if url has been check let the button bg turn green
   const validateURL = (string) => {
     const pattern = /^(ftp|http|https):\/\/[^ "]+$/;
-  pattern.test(string) ? setDisable(false) : setDisable(true);
- 
+    return pattern.test(string);
   };
 
-  
   const handleChange = (event) => {
     const url = event.target.value;
     setInput(url);
-    validateURL(url);
-  };
+    const isValid = validateURL(url);
+    setDisable(!isValid); 
+    
+    if (!isValid) {
+      setUrlError("Please enter a valid URL ⚠️");
+    } else {
+      setUrlError(""); 
+    }
 
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    try {
-      const response = await fetch("http://localhost:3000/links", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ "url": input, "description": description }),
-
-      });
-
-      window.location = "/";
-
-      console.log("Response:", response);
-    } catch (error) {
-      console.error("Error shortening URL:", error.response?.data || error.message);
+   if (!disable) {  /*checks if it't not a valid url */ 
+      try {
+        const response = await fetch("http://localhost:3000/links", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ "url": input, "description": description }),
+        });
+        window.location = "/";
+        console.log("Response:", response);
+      } catch (error) {
+        console.error("Error shortening URL:", error.response?.data || error.message);
+      }
+    } else {
+      setUrlError("Please enter a valid URL before submitting ⚠️");
     }
   };
 
@@ -49,9 +53,7 @@ function Short() {
     <div className="h-full bg-white flex flex-col items-center justify-center py-12">
       <div className="sm:w-full sm:max-w-sm">
         <img className="mx-auto h-20 w-auto" src="images/http.png" alt="Logo" />
-
         <h2 className="text-center text-2xl font-bold text-gray-900">URL Shortener/Saver</h2>
-
         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
           <input
             type="url"
@@ -62,15 +64,15 @@ function Short() {
             required
             className="block w-full rounded-md bg-white px-3 py-1.5 text-gray-900 outline-1 outline-gray-300 placeholder-gray-400 focus:outline-2 focus:outline-indigo-600"
           />
-    <input
+          {urlError && <p className="text-red-500 text-sm">{urlError}</p>}
+          <input
             type="text"
             name="description"
             value={description}
             onChange={handleDescriptionChange}
             placeholder="description..."
-           className="block w-full rounded-md bg-white px-3 py-1.5 text-gray-900 outline-1 outline-gray-300 placeholder-gray-400 focus:outline-2 focus:outline-indigo-600"
+            className="block w-full rounded-md bg-white px-3 py-1.5 text-gray-900 outline-1 outline-gray-300 placeholder-gray-400 focus:outline-2 focus:outline-indigo-600"
           />
-
           <button
             type="submit"
             className={`w-full rounded-md px-3 py-1.5 text-white font-semibold shadow-xs focus:outline-2 focus:outline-indigo-600 ${
@@ -80,13 +82,9 @@ function Short() {
             Generate Link
           </button>
         </form>
-    
       </div>
-
-<br /><br /><br />
-
-
-<UrlTable/>
+      <br /><br /><br />
+      <UrlTable />
     </div>
   );
 }

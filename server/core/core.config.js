@@ -120,11 +120,11 @@ app.get("/links", async (req, res) => {
   
   app.put("/links/:id", async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const {id} = parseInt(req.params.id);
       const { description} = req.body;
       const updateResult = await db.query(
-        "UPDATE links SET description = $1, RETURNING *",
-        [description]
+        "UPDATE links SET description = $1 WHERE id = $2,",
+        [description , id]
       );
       if (updateResult.rows.length === 0) {
         return res.status(404).json({ message: "Link not found" });
