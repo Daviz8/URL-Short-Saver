@@ -1,20 +1,14 @@
-import dotenv from 'dotenv';
-dotenv.config();
-
-const pass =  process.env.PASSWORD; 
-const PORT = process.env.PORT
-
 import pg from "pg";
+import { config } from "dotenv";
+
+config();
 
 const db = new pg.Client({
-    user: "postgres",
-    host: "localhost",
-    database: "short",
-    password: pass ,
-    port: PORT,
+  user: "postgres",
+  host: "localhost",
+  database: "short",
+  password: process.env.DB_PASSWORD,
+  port: Number(process.env.DB_PORT),
 });
-
-
-
 
 export default db;

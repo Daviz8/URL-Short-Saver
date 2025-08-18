@@ -77,73 +77,92 @@ function UrlTable() {
   }
 
   return (
-    <>
-      <div className="container mx-auto p-6">
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border border-gray-200">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="py-3 px-4 text-left text-lg font-extrabold text-gray-700 font-serif">Details</th>
-                <th className="py-3 px-4 text-left text-lg font-extrabold text-gray-700 font-serif">Short URL</th>
-                <th className="py-3 px-4 text-left text-lg font-extrabold text-gray-700 font-serif">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {urlData.map((url) => (
-                <tr key={url.id} className="border-t">
-                  <td className="py-3 libre-baskerville-regular font-bold px-6 text-sm text-gray-600">{url.description} </td>
-                  <td className="py-3 font-bold px-4 text-sm text-blue-500 break-words">{url.shortenedurl}</td>
-                  <td className="py-3 px-4 text-sm">
-                    <button
-                      onClick={() => handleCopy(url.shortenedurl, url.id)}
-                      className="bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded"
-                    >
-                      {copied === url.id ? "Copied!" : "Copy"}
-                    </button>
-                    <button
-                      onClick={() => Del(url.id)}
-                      className="bg-red-500 hover:bg-red-600 text-white mx-2 my-2  py-1 px-3 rounded"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <br />
-      <br />
-      <div className="max-w-2xl mx-auto">
-        <nav aria-label="Page navigation example">
-          <ul className="inline-flex -space-x-px">
-            <li>
-              <button
-                onClick={getPreviousPage}
-                disabled={currentPage === 0}
-                className="bg-white border font-bold border-gray-300 text-gray-500 hover:bg-gray-100 hover:text-gray-700 ml-0 rounded-l-lg leading-tight py-2 px-3 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-              >
-                Previous
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={getNextPage}
-                disabled={totalPages !== null && currentPage >= totalPages - 1}
-                className="bg-white border font-bold border-gray-300 text-gray-500 hover:bg-gray-100 hover:text-gray-700 rounded-r-lg leading-tight py-2 px-3 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-              >
-                Next
-              </button>
-            </li>
-          </ul>
-        </nav>
-        {totalPages !== null && (
-          <p className="mt-2 text-center text-sm text-gray-500">
-            Page {currentPage + 1} of {totalPages}
-          </p>
-        )}
-      </div>
+    <><div className="container mx-auto p-4">
+  <div className="overflow-x-auto">
+    <table className="min-w-full bg-white border border-gray-200 text-sm sm:text-base">
+      <thead className="bg-gray-100 hidden sm:table-header-group">
+        <tr>
+          <th className="py-3 px-4 text-left font-extrabold text-gray-700 font-serif">Details</th>
+          <th className="py-3 px-4 text-left font-extrabold text-gray-700 font-serif">Short URL</th>
+          <th className="py-3 px-4 text-left font-extrabold text-gray-700 font-serif">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {urlData.map((url) => (
+          <tr
+            key={url.id}
+            className="border-t block sm:table-row mb-4 sm:mb-0"
+          >
+            {/* Details */}
+            <td className="py-3 px-4 block sm:table-cell">
+              <span className="sm:hidden font-bold text-gray-600">Details: </span>
+              <span className="libre-baskerville-regular text-gray-700 font-bold">
+                {url.description}
+              </span>
+            </td>
+
+            {/* Short URL */}
+            <td className="py-3 px-4 block sm:table-cell">
+              <span className="sm:hidden font-bold text-gray-600">Short URL: </span>
+              <span className="text-blue-500 font-bold break-words">{url.shortenedurl}</span>
+            </td>
+
+            {/* Actions */}
+            <td className="py-3 px-4 block sm:table-cell">
+              <span className="sm:hidden font-bold text-gray-600">Actions: </span>
+              <div className="flex flex-wrap gap-2 sm:block">
+                <button
+                  onClick={() => handleCopy(url.shortenedurl, url.id)}
+                  className=  " Mont bg-green-500 hover:bg-green-600 text-white py-1 px-4 rounded w-full sm:w-auto mx-5"
+                >
+                  {copied === url.id ? "Copied!" : "Copy"}
+                </button>
+                <button
+                  onClick={() => Del(url.id)}
+                  className=" Mont bg-red-500 hover:bg-red-600 text-white py-1 px-4 rounded w-full sm:w-auto"
+                >
+                  Delete
+                </button>
+              </div>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  {/* Pagination */}
+  <div className="max-w-2xl mx-auto mt-6">
+    <nav aria-label="Page navigation example">
+      <ul className="inline-flex -space-x-px w-full justify-center sm:justify-start">
+        <li>
+          <button
+            onClick={getPreviousPage}
+            disabled={currentPage === 0}
+            className="bg-white border font-bold border-gray-300 text-gray-500 hover:bg-gray-100 hover:text-gray-700 ml-0 rounded-l-lg leading-tight py-2 px-3 disabled:opacity-50"
+          >
+            Previous
+          </button>
+        </li>
+        <li>
+          <button
+            onClick={getNextPage}
+            disabled={totalPages !== null && currentPage >= totalPages - 1}
+            className="bg-white border font-bold border-gray-300 text-gray-500 hover:bg-gray-100 hover:text-gray-700 rounded-r-lg leading-tight py-2 px-3 disabled:opacity-50"
+          >
+            Next
+          </button>
+        </li>
+      </ul>
+    </nav>
+    {totalPages !== null && (
+      <p className="mt-2 text-center text-xs sm:text-sm text-gray-500">
+        Page {currentPage + 1} of {totalPages}
+      </p>
+    )}
+  </div>
+</div>
+
     </>
   );
 }

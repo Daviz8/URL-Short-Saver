@@ -2,3 +2,14 @@
   font-family: "Libre Baskerville", serif;
   font-style: normal;
 }
+
+.Mont{
+font-family: "Jost" , sans-serif;
+font-style: italic;
+}
+
+.Mont:hover{
+  font-style:normal;
+  font-weight: bold;
+  font-family: "Jost" , sans-serif;
+}
