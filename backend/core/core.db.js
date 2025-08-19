@@ -1,15 +1,12 @@
-import pg from "pg";
-import { config } from "dotenv";
+import pg from 'pg';
 
-config();
+const { Pool } = pg;
 
-const db = new pg.Client({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
-  password: process.env.DB_PASSWORD,
-  port: Number(process.env.DB_PORT),
-  ssl: { rejectUnauthorized: false } // Railway requires SSL for secure connection
+const pool = new Pool({
+  connectionString: process.env.POSTGRES_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
-export default db;
+export default pool;
