@@ -1,6 +1,7 @@
 import { useState } from "react";
 import UrlTable from "./urlTable";
 
+
 function Short() {
   const [input, setInput] = useState("");
   const [disable, setDisable] = useState(true);
@@ -34,7 +35,7 @@ function Short() {
     event.preventDefault();
    if (!disable) {  /*checks if it't not a valid url */ 
       try {
-        const response = await fetch("http://localhost:3000/links", {
+        const response = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/links`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ "url": input, "description": description }),

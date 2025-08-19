@@ -12,7 +12,7 @@ function UrlTable() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`http://localhost:3000/links?page=${page}`);
+      const response = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/links?page=${page}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -46,7 +46,7 @@ function UrlTable() {
   /* Delete link */
   const Del = async (id) => {
     try {
-      const response = await fetch(`http://localhost:3000/links/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/links/${id}`, {
         method: "DELETE",
       });
       console.log(response);
