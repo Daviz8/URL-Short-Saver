@@ -96,7 +96,7 @@ function UrlTable() {
             {/* Details */}
             <td className="py-3 px-4 block sm:table-cell">
               <span className="sm:hidden font-bold text-gray-600">Details: </span>
-              <span className="libre-baskerville-regular text-gray-700 font-bold">
+              <span  contentEditable   className="libre-baskerville-regular text-gray-700 font-bold">
                 {url.description}
               </span>
             </td>

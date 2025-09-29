@@ -3,7 +3,7 @@ import bodyParser from "body-parser";
 import { promises as fs, link } from 'fs';
 import path from 'path';
 import cors from "cors";
-import db from "./core.db.js"; // 
+import Db from "./core.db.js"; 
 import { whitelist } from "../common/constants.js";
 import { config } from "process";
 import { configDotenv } from "dotenv";
@@ -16,10 +16,9 @@ const port = 3000;
 export const runAppConfig = () => {
 
     // Database connection
-    db.connect();
+    Db.connect();
 
-app.use(cors());
-  
+app.use(cors());  
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.json());

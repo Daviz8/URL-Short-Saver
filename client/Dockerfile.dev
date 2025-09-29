@@ -1,0 +1,17 @@
+FROM node:20.19-alpine
+
+# Set working directory inside container
+WORKDIR /app
+
+# Copy dependency files first (for caching npm install layers)
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy rest of the project files
+COPY . .
+
+
+# Default command to run dev server
+CMD ["npm", "run", "dev"]
