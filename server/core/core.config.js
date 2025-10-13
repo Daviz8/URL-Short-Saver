@@ -3,7 +3,7 @@ import bodyParser from "body-parser";
 import { promises as fs, link } from 'fs';
 import path from 'path';
 import cors from "cors";
-import Db from "./core.db.js"; 
+import Db from "./core.Db.js"; 
 import { whitelist } from "../common/constants.js";
 import { config } from "process";
 import { configDotenv } from "dotenv";
@@ -64,7 +64,7 @@ app.post("/links", async (req, res) => {
           return res.status(500).json({ error: "Failed to retrieve shortened URL" });
       }
 
-      const result = await db.query(
+      const result = await Db.query(
           "INSERT INTO links (description, url,  ShortenedUrl) VALUES ($1, $2, $3) RETURNING *",
           [description, url, shortenedUrl]
       );
@@ -82,11 +82,11 @@ app.get("/links", async (req, res) => {
     const linksPerPage = 10;
     const offset = page * linksPerPage;
 
-    const countResult = await db.query("SELECT COUNT(*) FROM links");
+    const countResult = await Db.query("SELECT COUNT(*) FROM links");
     const totalLinks = parseInt(countResult.rows[0].count);
     const totalPages = Math.ceil(totalLinks / linksPerPage);
 
-    const allLinks = await db.query("SELECT * FROM links LIMIT $1 OFFSET $2", [linksPerPage, offset]);
+    const allLinks = await Db.query("SELECT * FROM links LIMIT $1 OFFSET $2", [linksPerPage, offset]);
 
     res.json({
       page: page,
@@ -105,7 +105,7 @@ app.get("/links", async (req, res) => {
     
     try {
       const id = req.params.id;
-      const linkResult = await db.query("SELECT * FROM links WHERE id = $1" , [id]  );
+      const linkResult = await Db.query("SELECT * FROM links WHERE id = $1" , [id]  );
       if (linkResult.rows.length === 0) {
         return res.status(404).json({ message: "Link not found" });
       }
@@ -121,7 +121,7 @@ app.get("/links", async (req, res) => {
     try {
       const {id} = parseInt(req.params.id);
       const { description} = req.body;
-      const updateResult = await db.query(
+      const updateResult = await Db.query(
         "UPDATE links SET description = $1 WHERE id = $2,",
         [description , id]
       );
@@ -139,7 +139,7 @@ app.get("/links", async (req, res) => {
   app.delete("/links/:id", async (req, res) => {
     try {
       const { id } = req.params;
-      await db.query("DELETE FROM links WHERE id = $1", [parseInt(id)]);
+      await Db.query("DELETE FROM links WHERE id = $1", [parseInt(id)]);
       res.json({ message: "Link was deleted!" });
     } catch (error) {
       console.error(error.message);

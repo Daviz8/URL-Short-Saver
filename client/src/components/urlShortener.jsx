@@ -35,7 +35,7 @@ function Short() {
     event.preventDefault();
    if (!disable) {  /*checks if it't not a valid url */ 
       try {
-        const response = await fetch(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/links`, {
+        const response = await fetch("https://localhost:3000/links", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ "url": input, "description": description }),
