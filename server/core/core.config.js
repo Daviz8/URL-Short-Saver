@@ -3,7 +3,7 @@ import bodyParser from "body-parser";
 import { promises as fs, link } from 'fs';
 import path from 'path';
 import cors from "cors";
-import Db from "./core.Db.js"; 
+import Db from "./core.db.js"; 
 import { whitelist } from "../common/constants.js";
 import { config } from "process";
 import { configDotenv } from "dotenv";
@@ -23,6 +23,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.json());
 
+
+/**Shorten the links**/
 
 app.post("/links", async (req, res) => {
   try {
