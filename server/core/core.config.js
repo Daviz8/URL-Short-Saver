@@ -1,5 +1,4 @@
 import express, { request } from "express";
-import bodyParser from "body-parser";
 import { promises as fs, link } from 'fs';
 import path from 'path';
 import cors from "cors";
@@ -19,8 +18,7 @@ export const runAppConfig = () => {
     Db.connect();
 
 app.use(cors());  
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 
