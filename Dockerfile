@@ -2,7 +2,7 @@
 # Stage: base
 ###################################################
 FROM node:22 AS base
-WORKDIR /URL-SHORT-SAVER
+WORKDIR /app
 
 ################## CLIENT STAGES ##################
 
@@ -10,9 +10,14 @@ WORKDIR /URL-SHORT-SAVER
 # Stage: client-base
 ###################################################
 FROM base AS client-base
+WORKDIR /app/client
+
+# Install dependencies
 COPY client/package.json client/package-lock.json ./
 RUN npm install
-COPY client/.eslintrc.cjs client/index.html client/vite.config.js ./
+
+# Copy client sources
+COPY client/index.html client/vite.config.js ./
 COPY client/public ./public
 COPY client/src ./src
 
@@ -28,31 +33,42 @@ CMD ["npm", "run", "dev"]
 FROM client-base AS client-build
 RUN npm run build
 
+
 ################ BACKEND STAGES ##################
 
-###################################################
-# Stage: backend-dev
+# This stage is used as the base for the backend-dev and test stages, since
+# there are common steps needed for each.
 ###################################################
 FROM base AS backend-dev
 COPY backend/package.json backend/package-lock.json ./
 RUN npm install
-COPY backend/spec ./spec
 COPY backend/src ./src
 CMD ["npm", "run", "dev"]
 
 ###################################################
 # Stage: test
+#
+# This stage runs the tests on the backend. This is split into a separate
+# stage to allow the final image to not have the test dependencies or test
+# cases.
 ###################################################
 FROM backend-dev AS test
 RUN npm run test
 
 ###################################################
-# Stage: final (production)
+# Stage: final
+#
+# This stage is intended to be the final "production" image. It sets up the
+# backend and copies the built client application from the client-build stage.
+#
+# It pulls the package.json and package-lock.json from the test stage to ensure that
+# the tests run (without this, the test stage would simply be skipped).
 ###################################################
 FROM base AS final
 ENV NODE_ENV=production
 COPY --from=test /usr/local/app/package.json /usr/local/app/package-lock.json ./
-RUN npm ci --production && npm cache clean --force
+RUN npm ci --production && \
+    npm cache clean --force
 COPY backend/src ./src
 COPY --from=client-build /usr/local/app/dist ./src/static
 EXPOSE 3000

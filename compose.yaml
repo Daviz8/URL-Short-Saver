@@ -1,21 +1,20 @@
-###################################################
-# Docker Compose for Node + React + PostgreSQL + Traefik
-###################################################
+
 services:
 
   ###################################################
-  # Reverse proxy (Traefik)
+  # Traefik Reverse Proxy
   ###################################################
   proxy:
     image: traefik:v3.6
-    command: --providers.docker
+    command:
+      - --providers.docker
     ports:
       - 80:80
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
   ###################################################
-  # Backend API (Node.js)
+  # Backend API
   ###################################################
   backend:
     build:
@@ -25,7 +24,7 @@ services:
       POSTGRES_HOST: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: short 
+      POSTGRES_DB: short
       POSTGRES_PORT: 5432
     depends_on:
       postgres:
@@ -34,15 +33,14 @@ services:
       watch:
         - path: ./backend/src
           action: sync
-          target: /usr/local/app/src
+          target: usr/local/app/src
         - path: ./backend/package.json
           action: rebuild
-    labels:
+      labels:
       traefik.http.routers.backend.rule: Host(`localhost`) && PathPrefix(`/api`)
       traefik.http.services.backend.loadbalancer.server.port: 3000
-
   ###################################################
-  # Client (React)
+  # Client (React + Vite)
   ###################################################
   client:
     build:
@@ -56,40 +54,36 @@ services:
         - path: ./client/package.json
           action: rebuild
     labels:
-      traefik.http.routers.client.rule: Host(`localhost`)
+      traefik.http.routers.client.rule: PathPrefix(`localhost`)
       traefik.http.services.client.loadbalancer.server.port: 5173
 
   ###################################################
   # PostgreSQL Database
   ###################################################
   postgres:
-    image: postgres:15
-    volumes:
-      - todo-postgres-data:/var/lib/postgresql/data
+    image: postgres
+    restart: always
+    env_file:
+      -..env
     environment:
+      PGDATA: /var/lib/postgresql/data
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: short 
+      POSTGRES_DB: short
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U root -d todos"]
-      interval: 5s
-      timeout: 5s
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
       retries: 5
+      start_period: 30s
+      timeout: 10s
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports: 
+        - "${POSTGRES_PORT}:5432"
 
-  ###################################################
-  # pgAdmin (PostgreSQL GUI)
-  ###################################################
-  pgadmin:
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@local.com
-      PGADMIN_DEFAULT_PASSWORD: secret
-    labels:
-      traefik.http.routers.pgadmin.rule: Host(`db.localhost`)
-      traefik.http.services.pgadmin.loadbalancer.server.port: 80
-
+  
 ###################################################
 # Volumes
 ###################################################
 volumes:
-  todo-postgres-data:
+  db-data: {}
