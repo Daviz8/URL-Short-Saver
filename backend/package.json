@@ -23,10 +23,10 @@
   "license": "ISC",
   "dependencies": {
     "@vercel/node": "^4.0.0",
-    "axios": "^1.8.4",
+    "axios": "^1.13.3",
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
+    "dotenv": "^17.2.3",
     "express": "^4.21.2",
     "pg": "^8.16.3"
   }

@@ -1,4 +1,3 @@
-
 services:
 
   ###################################################
@@ -6,8 +5,7 @@ services:
   ###################################################
   proxy:
     image: traefik:v3.6
-    command:
-      - --providers.docker
+    command: --providers.docker
     ports:
       - 80:80
     volumes:
@@ -18,13 +16,13 @@ services:
   ###################################################
   backend:
     build:
-      context: ./
+      context: .
       target: backend-dev
     environment:
       POSTGRES_HOST: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: short
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_PORT: 5432
     depends_on:
       postgres:
@@ -33,18 +31,19 @@ services:
       watch:
         - path: ./backend/src
           action: sync
-          target: usr/local/app/src
+          target: /usr/local/app/src
         - path: ./backend/package.json
           action: rebuild
-      labels:
+    labels:
       traefik.http.routers.backend.rule: Host(`localhost`) && PathPrefix(`/api`)
       traefik.http.services.backend.loadbalancer.server.port: 3000
+
   ###################################################
   # Client (React + Vite)
   ###################################################
   client:
     build:
-      context: ./
+      context: .
       target: client-dev
     develop:
       watch:
@@ -53,9 +52,10 @@ services:
           target: /usr/local/app/src
         - path: ./client/package.json
           action: rebuild
-    labels:
-      traefik.http.routers.client.rule: PathPrefix(`localhost`)
-      traefik.http.services.client.loadbalancer.server.port: 5173
+  labels:
+  traefik.http.routers.client.rule: Host(`localhost`)
+  traefik.http.services.client.loadbalancer.server.port: 5173
+
 
   ###################################################
   # PostgreSQL Database
@@ -64,12 +64,12 @@ services:
     image: postgres
     restart: always
     env_file:
-      -..env
+      - .env
     environment:
       PGDATA: /var/lib/postgresql/data
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: short
+      PGUSER: ${POSTGRES_USER}
+      PGDATABASE: ${POSTGRES_DB}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
@@ -78,10 +78,9 @@ services:
       timeout: 10s
     volumes:
       - db-data:/var/lib/postgresql/data
-    ports: 
-        - "${POSTGRES_PORT}:5432"
+    ports:
+      -${POSTGRES_PORT}:5432
 
-  
 ###################################################
 # Volumes
 ###################################################

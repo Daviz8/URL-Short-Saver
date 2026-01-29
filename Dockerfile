@@ -15,9 +15,7 @@ WORKDIR /app/client
 # Install dependencies
 COPY client/package.json client/package-lock.json ./
 RUN npm install
-
-# Copy client sources
-COPY client/index.html client/vite.config.js ./
+COPY client/.eslintrc.cjs client/index.html client/vite.config.js ./
 COPY client/public ./public
 COPY client/src ./src
 
@@ -70,6 +68,6 @@ COPY --from=test /usr/local/app/package.json /usr/local/app/package-lock.json ./
 RUN npm ci --production && \
     npm cache clean --force
 COPY backend/src ./src
-COPY --from=client-build /usr/local/app/dist ./src/static
+COPY --from=client-build /usr/local/app/dist ./src/index.js
 EXPOSE 3000
 CMD ["node", "src/index.js"]
