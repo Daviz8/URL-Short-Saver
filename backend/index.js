@@ -1,6 +1,4 @@
-import { runAppConfig } from "./core/core.config.js";
-
-
+import { runAppConfig } from "./src/core/core.config.js";
 async function main(){
     const {startServer} = runAppConfig()
     startServer()

@@ -8,8 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "start": "npm run dev",
-      "test": "vitest",
-  "test:ui": "vitest --ui",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -24,6 +24,7 @@
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "@vitejs/plugin-react": "^4.3.4",
+    "baseline-browser-mapping": "^2.9.19",
     "eslint": "^9.19.0",
     "eslint-plugin-react": "^7.37.4",
     "eslint-plugin-react-hooks": "^5.0.0",

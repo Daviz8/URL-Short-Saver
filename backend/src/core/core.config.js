@@ -2,20 +2,15 @@ import express, { request } from "express";
 import { promises as fs, link } from 'fs';
 import path from 'path';
 import cors from "cors";
-import Db from "./core.db.js"; 
-import { whitelist } from "../common/constants.js";
-import { config } from "process";
-import { configDotenv } from "dotenv";
 import axios from "axios";
+import Db from "./core.Db.js"; 
 
+    Db.connect();
 
 const app = express();
 const port = 3000;
 
 export const runAppConfig = () => {
-
-    // Database connection
-    Db.connect();
 
 app.use(cors());  
 app.use(express.urlencoded({ extended: true }));
