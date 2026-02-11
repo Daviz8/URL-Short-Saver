@@ -1,9 +1,7 @@
 import express, { request } from "express";
-import { promises as fs, link } from 'fs';
-import path from 'path';
 import cors from "cors";
 import axios from "axios";
-import Db from "./core.Db.js"; 
+import Db from "./core.db.js"; 
 
     Db.connect();
 
