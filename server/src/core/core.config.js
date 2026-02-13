@@ -6,7 +6,7 @@ import Db from "./core.db.js";
     Db.connect();
 
 const app = express();
-const port = 3000;
+const port = "https://url-short-saver-c6ik.onrender.com";
 
 export const runAppConfig = () => {
 
@@ -142,7 +142,7 @@ app.get("/links", async (req, res) => {
 
     const startServer = () => {
         app.listen(port, () => {
-            console.log(`Server started at https://localhost:${port}`);
+            console.log(`Server started at ${port}`);
         });
     };
 

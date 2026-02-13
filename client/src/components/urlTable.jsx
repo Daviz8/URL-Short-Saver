@@ -12,7 +12,7 @@ function UrlTable() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`http://localhost:3000/links?page=${page}`);
+      const response = await fetch(`https://url-short-saver-c6ik.onrender.com/links?page=${page}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
